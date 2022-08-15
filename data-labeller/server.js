@@ -62,9 +62,9 @@ const normalizeLabels = (labels) => {
 
 app.post('/labels', (req, res) => {
   const imageId = req.query.imageId
-  console.log('POST /labels', imageId);
   const label = req.query.label
   const isToggle = req.query.toggle ? true : false;
+  console.log('POST /labels', imageId, label, 'toggle', isToggle);
 
   // update the labels and save it out.
   if (!labels.fileLabels[imageId]) {
