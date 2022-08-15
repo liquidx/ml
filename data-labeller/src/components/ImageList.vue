@@ -29,8 +29,8 @@ const props = defineProps({
     default: 0,
   },
   labels: {
-    type: Array,
-    default: [],
+    type: Object,
+    default: {},
   },
 });
 
@@ -41,13 +41,14 @@ const classesForImage = (filename, index) => {
   if (index == props.selectedIndex) {
     klasses.push("font-bold");
   }
-  const labels = props.labels.filter((label) => label[0] == filename);
-  if (labels.length > 0) {
-    let lastLabel = labels[labels.length - 1];
-    if (lastLabel[1] == "exclude") {
-      klasses.push("text-red-500");
-    } else {
+  const labels = props.labels[filename];
+  if (labels && labels.length > 0) {
+    if (labels.includes("exclude")) {
+      klasses.push("text-red-300");
+    } else if (labels.includes("good")) {
       klasses.push("text-green-500");
+    } else if (labels.includes("include")) {
+      klasses.push("text-green-300");
     }
   }
   return klasses.join(" ");

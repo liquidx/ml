@@ -1,6 +1,5 @@
 <template>
-  <div class="bg-gray-200 h-screen w-screen">
-    <div class="p-4 color-gray-700 text-3xl font-bold">Data Labeller</div>
+  <div class="container bg-gray-200 h-screen w-screen overflow-hidden">
     <ImageClassifier />
   </div>
 </template>

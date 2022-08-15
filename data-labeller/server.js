@@ -31,23 +31,59 @@ app.delete('/images', async (req, res) => {
 
 // Labelling
 
-let labels = []
+let labels = { fileLabels: {} }
 fs.readFile(__dirname + '/public/labels.json')
   .then(data => {
     if (data) {
       labels = JSON.parse(data);
+      console.log(Object.keys(labels))
     }
   })
   .catch(() => {
     // silent fail
   })
 
+const normalizeLabels = (labels) => {
+  if (labels.includes('include') && labels.includes('exclude')) {
+    // Take the last one
+    let includeIndex = labels.indexOf('include')
+    let excludeIndex = labels.indexOf('exclude')
+    if (includeIndex > excludeIndex) {
+      // Remove exclude
+      labels = labels.filter(e => e !== 'exclude')
+    } else {
+      // Remove include
+      labels = labels.filter(e => e !== 'include')
+    }
+  }
+
+  return labels
+}
+
 app.post('/labels', (req, res) => {
   const imageId = req.query.imageId
   console.log('POST /labels', imageId);
   const label = req.query.label
+  const isToggle = req.query.toggle ? true : false;
+
   // update the labels and save it out.
-  labels.push([imageId, label])
+  if (!labels.fileLabels[imageId]) {
+    labels.fileLabels[imageId] = []
+  }
+
+  if (isToggle) {
+    if (labels.fileLabels[imageId].includes(label)) {
+      labels.fileLabels[imageId] = labels.fileLabels[imageId].filter(e => e !== label)
+    } else {
+      labels.fileLabels[imageId].push(label)
+    }
+  } else {
+    labels.fileLabels[imageId].push(label)
+  }
+
+  // Remove any conflicts
+  labels.fileLabels[imageId] = normalizeLabels(labels.fileLabels[imageId])
+
   fs.writeFile(__dirname + '/public/labels.json', JSON.stringify(labels))
   res.send(JSON.stringify(labels))
 })
