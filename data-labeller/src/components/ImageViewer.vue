@@ -9,6 +9,9 @@
         <button class="">E<span class="underline">x</span>clude</button>
       </div>
       <div>
+        <button class=""><span class="underline">G</span>ood</button>
+      </div>
+      <div>
         <button class=""><span class="underline">N</span>ext</button>
       </div>
       <div>
