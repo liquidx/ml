@@ -1,6 +1,6 @@
 # ignore datasets
 data-labeller/public/rico-screenshots/
-
+data-labeller/public/rico-labels/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

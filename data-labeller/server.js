@@ -11,11 +11,14 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const app = express()
 const port = 12000
 
+const IMAGE_LIST_JSON = '/public/rico-labels/images.json'
+const LABEL_LIST_JSON = '/public/rico-labels/labels.json'
+
 app.use(cors())
 
 app.get('/images', (req, res) => {
   console.log('GET /images')
-  res.sendFile(__dirname + '/public/rico.json')
+  res.sendFile(__dirname + IMAGE_LIST_JSON)
 })
 
 app.delete('/images', async (req, res) => {
@@ -32,7 +35,7 @@ app.delete('/images', async (req, res) => {
 // Labelling
 
 let labels = { fileLabels: {} }
-fs.readFile(__dirname + '/public/labels.json')
+fs.readFile(__dirname + LABEL_LIST_JSON)
   .then(data => {
     if (data) {
       labels = JSON.parse(data);
@@ -84,7 +87,7 @@ app.post('/labels', (req, res) => {
   // Remove any conflicts
   labels.fileLabels[imageId] = normalizeLabels(labels.fileLabels[imageId])
 
-  fs.writeFile(__dirname + '/public/labels.json', JSON.stringify(labels))
+  fs.writeFile(__dirname + LABEL_LIST_JSON, JSON.stringify(labels))
   res.send(JSON.stringify(labels))
 })
 
