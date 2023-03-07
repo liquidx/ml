@@ -3,8 +3,8 @@
 	import * as d3 from 'd3';
 	import { exampleEmbedding } from './embedding';
 
-	let server = 'http://localhost:11000/embeddings';
-	//	let server = 'https://liquidx-ml.uc.r.appspot.com/predict';
+	//	let server = 'http://localhost:11000/embeddings';
+	let server = 'https://liquidx-ml.uc.r.appspot.com/predict';
 
 	let output: HTMLDivElement | null = null;
 
