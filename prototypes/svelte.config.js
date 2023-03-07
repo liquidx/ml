@@ -21,7 +21,7 @@ const config = {
 			pages: 'dist',
 			assets: 'dist',
 			fallback: null,
-			trailingSlash: 'always',
+			trailingSlash: 'never',
 			precompress: false
 		})
 
