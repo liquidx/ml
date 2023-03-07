@@ -9,9 +9,9 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-const predict = async (prompt: string) => {
+const predict = async (prompt: string, model: string) => {
   const response = await openai.createCompletion({
-    model: 'text-davinci-003',
+    model: model,
     prompt: prompt,
     temperature: 0.1,
     max_tokens: 100
@@ -35,16 +35,23 @@ app.get('/', (req, res, next) => {
 
 app.get('/predict', (req, res, next) => {
   let prompt = req.query.prompt;
+  let model = req.query.model || 'text-davinci-003';
 
-  if (prompt && typeof prompt == 'string') {
-    predict(prompt)
+  if (!prompt) {
+    res.status(400).send('No prompt provided');
+    return;
+  }
+
+  if (typeof prompt == 'string' && typeof model == 'string') {
+    predict(prompt, model)
       .then((text) => {
         res.status(200).send(JSON.stringify({ output: text }));
       }).catch(err => {
         res.status(500).send(err);
       })
   } else {
-    res.status(400).send('No prompt provided');
+    res.status(400).send('Prompt and model must be strings');
+    return;
   }
 })
 
