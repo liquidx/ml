@@ -1,35 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 
-import { openaiKey } from './keys.js';
-import { Configuration, OpenAIApi } from 'openai';
-
-const configuration = new Configuration({
-  apiKey: openaiKey
-});
-const openai = new OpenAIApi(configuration);
-
-const predict = async (prompt: string, model: string) => {
-  const response = await openai.createCompletion({
-    model: model,
-    prompt: prompt,
-    temperature: 0.1,
-    max_tokens: 100
-  });
-  return response.data.choices[0].text;
-};
-
-const embeddings = async (text: string) => {
-  const response = await openai.createEmbedding({
-    model: 'text-embedding-ada-002',
-    input: text
-  })
-  return response.data
-}
-
-//
-//
-//
+import { setRememberEndpoints } from './remember.js';
+import { getEmbeddings, predict } from './openai.js';
+import { setEmbeddingsEndpoints } from './embeddings.js';
 
 
 const port = Number(process.env.PORT) || 11000;
@@ -66,7 +40,7 @@ app.get('/predict', (req, res, next) => {
 app.get('/embeddings', (req, res, next) => {
   let text = req.query.text;
   if (text) {
-    embeddings(text as string)
+    getEmbeddings(text as string)
       .then((response) => {
         res.status(200).send(JSON.stringify(response.data));
       }).catch(err => {
@@ -74,6 +48,9 @@ app.get('/embeddings', (req, res, next) => {
       })
   }
 })
+
+setEmbeddingsEndpoints(app);
+setRememberEndpoints(app);
 
 
 export const server = app.listen(port, () => {
