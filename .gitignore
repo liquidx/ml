@@ -170,3 +170,4 @@ prototypes/package
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+keys.ts
