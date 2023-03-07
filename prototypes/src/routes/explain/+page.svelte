@@ -2,8 +2,8 @@
 	import { Alert } from 'flowbite-svelte';
 	import { Input, Label, Helper } from 'flowbite-svelte';
 
-	// let server = 'http://localhost:11000/predict';
-	let server = 'https://liquidx-ml.uc.r.appspot.com/predict';
+	let server = 'http://localhost:11000/predict';
+	//	let server = 'https://liquidx-ml.uc.r.appspot.com/predict';
 	let output: HTMLDivElement | null = null;
 
 	const constructPrompt = (subject: string) => {

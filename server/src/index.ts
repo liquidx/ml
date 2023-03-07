@@ -19,6 +19,14 @@ const predict = async (prompt: string, model: string) => {
   return response.data.choices[0].text;
 };
 
+const embeddings = async (text: string) => {
+  const response = await openai.createEmbedding({
+    model: 'text-embedding-ada-002',
+    input: text
+  })
+  return response.data
+}
+
 //
 //
 //
@@ -52,6 +60,18 @@ app.get('/predict', (req, res, next) => {
   } else {
     res.status(400).send('Prompt and model must be strings');
     return;
+  }
+})
+
+app.get('/embeddings', (req, res, next) => {
+  let text = req.query.text;
+  if (text) {
+    embeddings(text as string)
+      .then((response) => {
+        res.status(200).send(JSON.stringify(response.data));
+      }).catch(err => {
+        res.status(500).send(err);
+      })
   }
 })
 

@@ -1,3 +1,4 @@
 <div class="p-8">
-	<a class="underline" href="/explain">Explain</a>
+	<div><a class="underline" href="/explain">Explain</a></div>
+	<div><a class="underline" href="/meaning">Meaning</a></div>
 </div>
