@@ -2,9 +2,7 @@
 	import { Input } from 'flowbite-svelte';
 	import * as d3 from 'd3';
 	import { exampleEmbedding } from './embedding';
-
-	//	let server = 'http://localhost:11000/embeddings';
-	let server = 'https://liquidx-ml.uc.r.appspot.com/predict';
+	import { serverUrl } from '../../dev';
 
 	let output: HTMLDivElement | null = null;
 
@@ -16,7 +14,7 @@
 	let embeddingCodes: EmbeddingCode[] = [];
 
 	const svgForEmbedding = (embedding: number[]): string => {
-		const height = 100;
+		const height = 300;
 		const valueScale = 1000;
 
 		const svg = d3.create('svg').attr('viewBox', [0, 0, embedding.length, height]);
@@ -60,7 +58,6 @@
 
 	const onEnter = async (e: KeyboardEvent) => {
 		if (e.key === 'Enter') {
-			const requestUrl = new URL(server);
 			const target = e.target;
 			let value = '';
 
@@ -71,6 +68,7 @@
 				return;
 			}
 
+			const requestUrl = new URL(`${serverUrl()}/embeddings`);
 			requestUrl.searchParams.append('text', value);
 			const response = await fetch(requestUrl.toString()).then((response) => response.json());
 			// if (output && response && response.output) {
