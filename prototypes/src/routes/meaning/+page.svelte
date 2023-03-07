@@ -10,12 +10,12 @@
 
 	type EmbeddingCode = {
 		embedding: number[];
-		svg: SVGElement;
+		svg: string;
 		text: string;
 	};
 	let embeddingCodes: EmbeddingCode[] = [];
 
-	const svgForEmbedding = (embedding: number[]) => {
+	const svgForEmbedding = (embedding: number[]): string => {
 		const height = 100;
 		const valueScale = 1000;
 
@@ -51,7 +51,11 @@
 			.attr('height', (d: number) => Math.abs(d) * valueScale)
 			.attr('fill', (d: number) => colorScheme(Math.abs(d) * 10));
 
-		return svg.node().outerHTML;
+		const node = svg.node();
+		if (!node) {
+			return '';
+		}
+		return node.outerHTML;
 	};
 
 	const onEnter = async (e: KeyboardEvent) => {
@@ -73,7 +77,7 @@
 			// 	output.innerHTML = response.output;
 			// }
 			let embedding = response[0].embedding;
-			let embeddingCode = {
+			let embeddingCode: EmbeddingCode = {
 				embedding,
 				svg: svgForEmbedding(embedding),
 				text: value
