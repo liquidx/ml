@@ -3,13 +3,11 @@ import { PineconeClient, UpsertRequest, Vector } from "@pinecone-database/pineco
 import { Express } from "express";
 
 import { pineconeKey } from './keys.js';
-import { chunksFromUrl } from './webembeddings'
+import { chunksFromUrl } from './webembeddings.js'
 import { getEmbeddings } from './openai.js';
 
 const pinecone = new PineconeClient();
 await pinecone.init(pineconeKey);
-
-
 
 type InsertParams = { text: string, embedding: number[] }
 const isValidInsertParam = (param: any): param is InsertParams => {
@@ -17,6 +15,18 @@ const isValidInsertParam = (param: any): param is InsertParams => {
 }
 
 export const setEmbeddingsEndpoints = (app: Express) => {
+
+  app.get('/embeddings/get', (req, res, next) => {
+    let text = req.query.text;
+    if (text) {
+      getEmbeddings(text as string)
+        .then((response) => {
+          res.status(200).send(JSON.stringify(response.data));
+        }).catch(err => {
+          res.status(500).send(err);
+        })
+    }
+  })
 
   app.post('/embeddings/insert', async (req, res, next) => {
     if (!req.query.contents) {
@@ -42,43 +52,53 @@ export const setEmbeddingsEndpoints = (app: Express) => {
   })
 };
 
+type ChunkEmbedding = {
+  text: string,
+  embedding: number[]
+}
+
 export const setWebEmbeddingsEndpoints = async (app: Express) => {
-  app.post('/embeddings/insert-url', async (req, res, next) => {
-    if (!req.query.url) {
+  app.post('/embeddings/url', async (req, res, next) => {
+    console.log(req.body)
+    if (!req.body.url) {
       res.status(400).send('No url provided');
       return
     }
 
-    if (typeof req.query.url != 'string') {
+    if (typeof req.body.url != 'string') {
       res.status(400).send('Url must be a string');
       return;
     }
 
-    const url = req.query.url;
+    const url = req.body.url;
     const chunks = await chunksFromUrl(url);
     if (!chunks || chunks.length == 0) {
-      res.status(400).send('No chunks found');
+      res.status(200).send(JSON.stringify({ error: 'No chunks found' }));
       return;
     }
 
     // Get embeddings for all the chunks.
-    const chunkEmbeddings: Promise<Vector>[] = chunks.map(async (chunk: string) => {
+    const chunkEmbeddings: Promise<ChunkEmbedding>[] = chunks.map(async (chunk: string) => {
       return getEmbeddings(chunk)
         .then((response: any) => ({
-          values: response.data[0].embedding as number[],
-          id: chunk
+          embedding: response.data[0].embedding as number[],
+          text: chunk
         }));
     });
     const vectors = await Promise.all(chunkEmbeddings);
 
-    // Write chunks to the pinecone database.
-    const index = pinecone.Index('knowledge')
-    const upsertRequest: UpsertRequest = {
-      vectors: vectors,
-      namespace: 'general'
-    }
-    console.log(upsertRequest);
-    const response = await index.upsert({ upsertRequest });
-    res.status(200).send(JSON.stringify(response));
+    res.status(200)
+      .header('Content-Type', 'application/json')
+      .send(JSON.stringify(vectors));
+
+    // // Write chunks to the pinecone database.
+    // const index = pinecone.Index('knowledge')
+    // const upsertRequest: UpsertRequest = {
+    //   vectors: vectors,
+    //   namespace: 'general'
+    // }
+    // console.log(upsertRequest);
+    // const response = await index.upsert({ upsertRequest });
+    // res.status(200).send(JSON.stringify(response));
   })
 }
