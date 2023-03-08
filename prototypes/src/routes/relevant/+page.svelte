@@ -118,12 +118,14 @@
 	/>
 	<div>
 		{#each chunks as chunk, index}
-			<div class="my-2">
+			<div class="my-2 mb-4 p-3 rounded-md bg-gray-50">
 				<div class="text-sm text-gray-400">{chunk.text}</div>
 				<div class="my-1">{@html chunk.svg}</div>
 				{#if chunk.correlations}
 					{#each chunk.correlations as correlation}
-						<Badge color="dark" class="m-1">{correlation.subject}: {correlation.correlation}</Badge>
+						<Badge color="dark" class="m-1"
+							>{correlation.subject}: {correlation.correlation.toString().substring(0, 4)}</Badge
+						>
 					{/each}
 				{/if}
 			</div>
