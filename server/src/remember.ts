@@ -1,8 +1,10 @@
-import { Filter, UpdateFilter, Document } from 'mongodb';
+import { Filter, UpdateFilter, Document, ObjectId } from 'mongodb';
 import { Express } from 'express';
 
-import { executeMongoQueries } from './mongodb';
-import { getEmbeddings } from './openai';
+import { executeMongoQueries } from './mongodb.js';
+import { getEmbeddings } from './openai.js';
+
+const staticProfileQuery = { _id: new ObjectId("123456789012345678901234") }
 
 export const setRememberEndpoints = (app: Express) => {
 
@@ -19,7 +21,15 @@ export const setRememberEndpoints = (app: Express) => {
       await executeMongoQueries(async (client) => {
         const db = client.db('prototypes');
         const collection = db.collection('rememberme')
-        const profile: Record<string, any> = collection.findOne({ _id: '64070855947befad5a5ba078' } as Filter<any>)
+        const profile = await collection.findOne(staticProfileQuery as Filter<any>)
+        if (!profile) {
+          console.error('No profile found')
+          res.status(400).send('No profile found');
+          return;
+        }
+
+        console.log(profile);
+
         if (!profile['likes']) {
           profile['likes'] = []
         }
@@ -28,10 +38,14 @@ export const setRememberEndpoints = (app: Express) => {
           text: text,
           embedding: embedding.data[0].embedding
         })
+
         await collection.updateOne(
-          { _id: '64070855947befad5a5ba078' } as Filter<any>,
+          staticProfileQuery as Filter<any>,
           { $set: profile } as UpdateFilter<Document>)
-        res.status(200).send(JSON.stringify(profile))
+        res
+          .header('Content-Type', 'application/json')
+          .status(200)
+          .send(JSON.stringify(profile))
       })
     } else {
       res.status(400).send('No embedding found');
@@ -41,6 +55,7 @@ export const setRememberEndpoints = (app: Express) => {
 
   app.get('/remember/likes/del', async (req, res, next) => {
     if (!req.query.text) {
+      console.error('No text found')
       res.status(400).send('No text provided');
       return;
     }
@@ -48,14 +63,22 @@ export const setRememberEndpoints = (app: Express) => {
     await executeMongoQueries(async (client) => {
       const db = client.db('prototypes');
       const collection = db.collection('rememberme')
-      const profile: Record<string, any> = collection.findOne({ _id: '64070855947befad5a5ba078' } as Filter<any>)
+      const profile = await collection.findOne(staticProfileQuery as Filter<any>)
+      if (!profile) {
+        console.error('No profile found')
+        res.status(400).send('No profile found');
+        return;
+      }
       if (profile['likes']) {
         profile['likes'] = profile['likes'].filter((like: any) => like.text != text)
       }
       await collection.updateOne(
-        { _id: '64070855947befad5a5ba078' } as Filter<any>,
+        staticProfileQuery as Filter<any>,
         { $set: profile } as UpdateFilter<Document>)
-      res.status(200).send(JSON.stringify(profile))
+      res
+        .header('Content-Type', 'application/json')
+        .status(200)
+        .send(JSON.stringify(profile))
     })
   });
 
@@ -64,11 +87,18 @@ export const setRememberEndpoints = (app: Express) => {
 
       const db = client.db('prototypes');
       const collection = db.collection('rememberme')
-      const profile: Record<string, any> = collection.findOne({ _id: '64070855947befad5a5ba078' } as Filter<any>)
-      res
-        .header('Content-Type', 'application/json')
-        .status(200)
-        .send(JSON.stringify(profile, null, 2))
+      const profile = await collection.findOne(staticProfileQuery as Filter<any>)
+      if (profile) {
+        res
+          .header('Content-Type', 'application/json')
+          .status(200)
+          .send(JSON.stringify(profile))
+      } else {
+        res
+          .header('Content-Type', 'application/json')
+          .status(200)
+          .send('{}')
+      }
     })
   })
 

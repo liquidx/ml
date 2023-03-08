@@ -3,13 +3,14 @@ import cors from 'cors';
 
 import { setRememberEndpoints } from './remember.js';
 import { getEmbeddings, predict } from './openai.js';
-import { setEmbeddingsEndpoints } from './embeddings.js';
+import { setEmbeddingsEndpoints, setWebEmbeddingsEndpoints } from './embeddings.js';
 
 
 const port = Number(process.env.PORT) || 11000;
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 app.get('/', (req, res, next) => {
   res.status(200).send('Hello');
@@ -37,18 +38,7 @@ app.get('/predict', (req, res, next) => {
   }
 })
 
-app.get('/embeddings', (req, res, next) => {
-  let text = req.query.text;
-  if (text) {
-    getEmbeddings(text as string)
-      .then((response) => {
-        res.status(200).send(JSON.stringify(response.data));
-      }).catch(err => {
-        res.status(500).send(err);
-      })
-  }
-})
-
+setWebEmbeddingsEndpoints(app);
 setEmbeddingsEndpoints(app);
 setRememberEndpoints(app);
 
