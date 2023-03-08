@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Input } from 'flowbite-svelte';
-	import { serverUrl } from '../../dev';
+	import { serverUrl } from '../../lib/dev';
 	let output: HTMLDivElement | null = null;
 
 	const constructPrompt = (subject: string) => {
