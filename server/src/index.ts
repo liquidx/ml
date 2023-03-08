@@ -9,8 +9,8 @@ import { setEmbeddingsEndpoints, setWebEmbeddingsEndpoints } from './embeddings.
 const port = Number(process.env.PORT) || 11000;
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
 app.get('/', (req, res, next) => {
   res.status(200).send('Hello');
