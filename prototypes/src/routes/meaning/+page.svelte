@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { Input } from 'flowbite-svelte';
-	import * as d3 from 'd3';
-	import { exampleEmbedding } from './embedding';
-	import { serverUrl } from '../../dev';
+	import { serverUrl } from '../../lib/dev';
+	import { svgForEmbedding } from '../../lib/embedding';
 
 	let output: HTMLDivElement | null = null;
 
@@ -12,49 +11,6 @@
 		text: string;
 	};
 	let embeddingCodes: EmbeddingCode[] = [];
-
-	const svgForEmbedding = (embedding: number[]): string => {
-		const height = 300;
-		const valueScale = 1000;
-
-		const svg = d3.create('svg').attr('viewBox', [0, 0, embedding.length, height]);
-		const g = svg.append('g');
-
-		const colorScheme = d3.interpolateOranges;
-
-		svg
-			.append('rect')
-			.attr('x', 0)
-			.attr('y', 50)
-			.attr('width', embedding.length)
-			.attr('height', 1)
-			.attr('fill', '#f00');
-
-		svg
-			.append('rect')
-			.attr('x', 0)
-			.attr('y', 0)
-			.attr('width', embedding.length)
-			.attr('height', height)
-			.attr('fill', 'rgba(0, 0, 0, 0.05)');
-
-		g.selectAll('rect')
-			.data(embedding)
-			.join('rect')
-			.attr('x', (d: number, i: number) => i)
-			.attr('y', (d: number, i: number) =>
-				d < 0 ? height / 2 : height / 2 - Math.abs(d) * valueScale
-			)
-			.attr('width', 1)
-			.attr('height', (d: number) => Math.abs(d) * valueScale)
-			.attr('fill', (d: number) => colorScheme(Math.abs(d) * 10));
-
-		const node = svg.node();
-		if (!node) {
-			return '';
-		}
-		return node.outerHTML;
-	};
 
 	const onEnter = async (e: KeyboardEvent) => {
 		if (e.key === 'Enter') {
@@ -68,7 +24,7 @@
 				return;
 			}
 
-			const requestUrl = new URL(`${serverUrl()}/embeddings`);
+			const requestUrl = new URL(`${serverUrl()}/embeddings/get`);
 			requestUrl.searchParams.append('text', value);
 			const response = await fetch(requestUrl.toString()).then((response) => response.json());
 			// if (output && response && response.output) {
