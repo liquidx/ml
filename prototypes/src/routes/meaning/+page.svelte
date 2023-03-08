@@ -3,14 +3,19 @@
 	import { serverUrl } from '../../lib/dev';
 	import { svgForEmbedding } from '../../lib/embedding';
 
-	let output: HTMLDivElement | null = null;
-
 	type EmbeddingCode = {
 		embedding: number[];
 		svg: string;
 		text: string;
 	};
 	let embeddingCodes: EmbeddingCode[] = [];
+
+	let loading = false;
+	let inputClass: string = '';
+
+	$: {
+		inputClass = loading ? ' animate-pulse' : '';
+	}
 
 	const onEnter = async (e: KeyboardEvent) => {
 		if (e.key === 'Enter') {
@@ -26,7 +31,9 @@
 
 			const requestUrl = new URL(`${serverUrl()}/embeddings/get`);
 			requestUrl.searchParams.append('text', value);
+			loading = true;
 			const response = await fetch(requestUrl.toString()).then((response) => response.json());
+			loading = false;
 			// if (output && response && response.output) {
 			// 	output.innerHTML = response.output;
 			// }
@@ -41,20 +48,6 @@
 			embeddingCodes = embeddingCodes;
 		}
 	};
-
-	$: {
-		if (output) {
-			// This ensures it doesn't run on the server.
-			//console.log('init');
-			// let embeddingCode = {
-			// 	embedding: exampleEmbedding,
-			// 	svg: svgForEmbedding(exampleEmbedding),
-			// 	text: 'Coffee Shop'
-			// };
-			// embeddingCodes.push(embeddingCode);
-			// embeddingCodes = embeddingCodes;
-		}
-	}
 </script>
 
 <svelte:head>
@@ -66,7 +59,12 @@
 		<a class="underline" href="/">Other Prototypes</a>
 	</div>
 	<div class="py-4">Embedding Barcodes</div>
-	<Input placeholder="Coffee Shop" on:keyup={onEnter} class="my-4 text-xl" autocomplete="off" />
+	<Input
+		placeholder="Type something you want to visualize as an embedding. eg. Espresso"
+		on:keyup={onEnter}
+		class={'my-4 text-xl ' + inputClass}
+		autocomplete="off"
+	/>
 	<div>
 		{#each embeddingCodes as embeddingCode}
 			<div class="my-2">
@@ -75,5 +73,4 @@
 			</div>
 		{/each}
 	</div>
-	<div bind:this={output} />
 </div>
