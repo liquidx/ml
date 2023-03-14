@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Input, Badge } from 'flowbite-svelte';
 	import { browser } from '$app/environment';
-	import { dot } from 'mathjs';
+	import { dot, subtract, sum, square } from 'mathjs';
 
 	import { serverUrl } from '../../lib/dev';
 	import { svgForEmbedding } from '../../lib/embedding';
@@ -44,6 +44,7 @@
 		for (let chunk of chunks) {
 			let correlations: SubjectCorrelation[] = [];
 			for (let like of likes) {
+				//let correlation = sum(subtract(chunk.embedding, like.embedding).map((x) => square(x)));
 				let correlation = dot(chunk.embedding, like.embedding);
 				correlations.push({ subject: like.text, correlation });
 			}
