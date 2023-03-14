@@ -11,7 +11,7 @@
 	}
 
 	const constructPrompt = (subject: string) => {
-		return `Explain a subject to a 18 year old in three sentences.
+		return `Explain a subject to a 18 year old in three sentences. If you are not sure, then say, "I don't know."
    Subject: ${subject}
    Explanation:`;
 	};
@@ -30,7 +30,7 @@
 
 			const prompt = constructPrompt(value);
 
-			const requestUrl = new URL(`${serverUrl()}/predict`);
+			const requestUrl = new URL(`${serverUrl()}/completion`);
 			requestUrl.searchParams.append('prompt', prompt);
 			//requestUrl.searchParams.append('model', 'text-curie-001'); // text-davinci-003
 			loading = true;
