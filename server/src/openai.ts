@@ -17,7 +17,7 @@ export const getEmbeddings = async (text: string): Promise<any> => {
 }
 
 
-export const predict = async (prompt: string, model: string) => {
+export const completion = async (prompt: string, model: string) => {
   const response = await openai.createCompletion({
     model: model,
     prompt: prompt,
