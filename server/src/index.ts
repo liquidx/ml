@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 
 import { setRememberEndpoints } from './remember.js';
-import { getEmbeddings, predict } from './openai.js';
+import { completion } from './openai.js';
 import { setEmbeddingsEndpoints, setWebEmbeddingsEndpoints } from './embeddings.js';
 
 
@@ -16,7 +16,7 @@ app.get('/', (req, res, next) => {
   res.status(200).send('Hello');
 })
 
-app.get('/predict', (req, res, next) => {
+app.get('/completion', (req, res, next) => {
   let prompt = req.query.prompt;
   let model = req.query.model || 'text-davinci-003';
 
@@ -26,7 +26,7 @@ app.get('/predict', (req, res, next) => {
   }
 
   if (typeof prompt == 'string' && typeof model == 'string') {
-    predict(prompt, model)
+    completion(prompt, model)
       .then((text) => {
         res.status(200).send(JSON.stringify({ output: text }));
       }).catch(err => {
