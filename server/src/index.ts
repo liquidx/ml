@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 
 import { setRememberEndpoints } from './remember.js';
-import { completion } from './openai.js';
+import { completion, getModels, chatCompletion } from './openai.js';
 import { setEmbeddingsEndpoints, setWebEmbeddingsEndpoints } from './embeddings.js';
 
 
@@ -25,17 +25,33 @@ app.get('/completion', (req, res, next) => {
     return;
   }
 
+
   if (typeof prompt == 'string' && typeof model == 'string') {
-    completion(prompt, model)
-      .then((text) => {
-        res.status(200).send(JSON.stringify({ output: text }));
-      }).catch(err => {
-        res.status(500).send(err);
-      })
+    if (model == 'gpt-3.5-turbo' || model == 'gpt-4') {
+      chatCompletion(prompt, model)
+        .then((text) => {
+          res.status(200).send(JSON.stringify({ output: text }));
+        }).catch(err => {
+          res.status(500).send(err.message);
+        })
+
+    } else {
+      completion(prompt, model)
+        .then((text) => {
+          res.status(200).send(JSON.stringify({ output: text }));
+        }).catch(err => {
+          res.status(500).send(err.message);
+        })
+    }
   } else {
     res.status(400).send('Prompt and model must be strings');
     return;
   }
+})
+
+app.get('/models', async (req, res, next) => {
+  const models = await getModels()
+  res.status(200).send(models);
 })
 
 setWebEmbeddingsEndpoints(app);

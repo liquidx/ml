@@ -32,7 +32,7 @@
 
 			const requestUrl = new URL(`${serverUrl()}/completion`);
 			requestUrl.searchParams.append('prompt', prompt);
-			//requestUrl.searchParams.append('model', 'text-curie-001'); // text-davinci-003
+			requestUrl.searchParams.append('model', 'gpt-3.5-turbo'); // text-davinci-003
 			loading = true;
 			const response = await fetch(requestUrl.toString()).then((response) => response.json());
 			loading = false;
