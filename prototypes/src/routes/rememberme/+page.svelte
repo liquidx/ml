@@ -2,8 +2,6 @@
 	import { browser } from '$app/environment';
 
 	import { Input, Badge } from 'flowbite-svelte';
-	import { serverUrl } from '../../lib/dev';
-	import { type Like, fetchLikes } from '../../lib/likes';
 
 	let output: HTMLDivElement | null = null;
 

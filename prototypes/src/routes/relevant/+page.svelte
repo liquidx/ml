@@ -3,10 +3,6 @@
 	import { browser } from '$app/environment';
 	import { dot, subtract, sum, square } from 'mathjs';
 
-	import { serverUrl } from '../../lib/dev';
-	import { svgForEmbedding } from '../../lib/embedding';
-	import { type Like, fetchLikes } from '../../lib/likes';
-
 	type SubjectCorrelation = {
 		subject: string;
 		correlation: number;

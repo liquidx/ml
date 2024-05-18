@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { Input } from 'flowbite-svelte';
-	import { serverUrl } from '../../lib/dev';
-	import { svgForEmbedding } from '../../lib/embedding';
+	import { svgForEmbedding } from '$lib/embedding';
+	import { exampleEmbeddingLarge } from '$lib/examples/embedding';
+	import axios from 'axios';
+	import OpenAI from 'openai';
+	import { onMount } from 'svelte';
 
 	type EmbeddingCode = {
 		embedding: number[];
@@ -17,6 +20,16 @@
 		inputClass = loading ? ' animate-pulse' : '';
 	}
 
+	onMount(() => {
+		embeddingCodes.push({
+			embedding: exampleEmbeddingLarge,
+			svg: svgForEmbedding(exampleEmbeddingLarge),
+			text: 'Example Embedding',
+		});
+		embeddingCodes = embeddingCodes;
+		console.log('mounted', embeddingCodes);
+	});
+
 	const onEnter = async (e: KeyboardEvent) => {
 		if (e.key === 'Enter') {
 			const target = e.target;
@@ -29,15 +42,21 @@
 				return;
 			}
 
-			const requestUrl = new URL(`${serverUrl()}/embeddings/get`);
-			requestUrl.searchParams.append('text', value);
 			loading = true;
-			const response = await fetch(requestUrl.toString()).then((response) => response.json());
+			const response = await axios.get('/api/embedding', {
+				params: {
+					input: value,
+				},
+			}) ;
 			loading = false;
+
+
 			// if (output && response && response.output) {
 			// 	output.innerHTML = response.output;
 			// }
-			let embedding = response[0].embedding;
+			let embeddingResponse = response.data as OpenAI.CreateEmbeddingResponse
+			let embedding = embeddingResponse.data[0].embedding
+			console.log(embedding)
 			let embeddingCode: EmbeddingCode = {
 				embedding,
 				svg: svgForEmbedding(embedding),

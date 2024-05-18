@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Input } from 'flowbite-svelte';
-	import { serverUrl } from '../../lib/dev';
+	import axios from 'axios';
+
 	let output: HTMLDivElement | null = null;
 
 	let loading = false;
@@ -16,7 +17,26 @@
    Explanation:`;
 	};
 
+	const requestExplanation = async (subject: string) => {
+		const prompt = constructPrompt(subject);
+		const response = await axios.get('/api/generate', {
+			params: {
+				prompt,
+			},
+		});
+
+		if (response && response.data && response.data.choices && response.data.choices.length > 0 && response.data.choices[0].message.content) {
+			if (!output) {
+				return;
+			}
+			output.innerHTML = response.data.choices[0].message.content;
+		}
+	};
+
 	const onEnter = async (e: KeyboardEvent) => {
+		if (!output) {
+			return;
+		}
 		if (e.key === 'Enter') {
 			const target = e.target;
 			let value = '';
@@ -27,19 +47,9 @@
 			} else {
 				return;
 			}
-
-			const prompt = constructPrompt(value);
-
-			const requestUrl = new URL(`${serverUrl()}/completion`);
-			requestUrl.searchParams.append('prompt', prompt);
-			requestUrl.searchParams.append('model', 'gpt-3.5-turbo'); // text-davinci-003
 			loading = true;
-			const response = await fetch(requestUrl.toString()).then((response) => response.json());
+			await requestExplanation(value);
 			loading = false;
-			if (output && response && response.output) {
-				output.innerHTML = response.output;
-			}
-			console.log(response);
 		}
 	};
 </script>
