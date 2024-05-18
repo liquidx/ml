@@ -1,5 +1,5 @@
 import os
-from apikey import apikey
+from dotenv import load_dotenv
 import streamlit as st
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
@@ -7,7 +7,7 @@ from langchain.chains import LLMChain, SimpleSequentialChain, SequentialChain
 from langchain.memory import ConversationBufferMemory
 from langchain.utilities import WikipediaAPIWrapper
 
-os.environ['OPENAI_API_KEY'] = apikey
+SECRET_KEY = os.getenv('PUBLIC_OPENAI_API_KEY')
 
 
 def main():
@@ -35,7 +35,7 @@ def main():
     wiki = WikipediaAPIWrapper()
 
     # LLMs
-    llm = OpenAI(temperature=0.9)
+    llm = OpenAI(api_key=SECRET_KEY, temperature=0.9)
     subject_chain = LLMChain(
         llm=llm,
         prompt=subject_template,
