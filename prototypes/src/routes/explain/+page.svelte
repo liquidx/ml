@@ -21,11 +21,15 @@
 		{ name: 'Gemini 1.5 Flash', modelId: 'gemini-1.5-flash-latest', useOllama: false},
 		{ name: 'GPT-4 Turbo', modelId: 'gpt-4-turbo', useOllama: false },
 		{ name: 'GPT-3.5', modelId: 'gpt-3.5-turbo-0125', useOllama: false},
+		{ name: 'Claude 3 Opus', modelId: 'claude-3-opus-20240229', useOllama: false},
+		{ name: 'Claude 3 Haiku', modelId: 'claude-3-haiku-20240307', useOllama: false},
 		{ name: 'Ollama Llama3', modelId: 'llama3:latest', useOllama: true },
 	]
 
 	let modelOutput: {[modelId: string]: HTMLDivElement} = {}
 	let modelEnabled : {[modelId: string]: boolean} = {
+		'claude-3-opus-20240229': false,
+		'claude-3-haiku-20240307': false,
 		'gemini-1.5-pro-latest': true,
 		'gemini-1.5-flash-latest': true,
 		'gpt-4-turbo': true,
