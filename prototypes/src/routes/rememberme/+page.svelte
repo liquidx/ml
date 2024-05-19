@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-
+	import axios from 'axios';
 	import { Input, Badge } from 'flowbite-svelte';
+import type { Like } from '$lib/likes';
 
 	let output: HTMLDivElement | null = null;
 
@@ -10,10 +11,28 @@
 
 	let loading = false;
 	let inputClass: string = '';
+	let likeInput : string = '';
 
 	$: {
 		inputClass = loading ? ' animate-pulse' : '';
 	}
+
+	const getLikes = async () => {
+		const response = await axios.get('/api/likes');
+		if (response.data && response.data.likes) {
+			likes = response.data.likes as Like[];
+		} else {
+			console.error('No likes found')
+		}
+	}
+
+	const addLike = async (text: string) => {
+		const response = await axios.put('/api/likes', { text });
+		let like = response.data as Like
+		console.log(response.data)
+		likes.push(like);
+		likes = likes;  // force refresh.
+	};
 
 	const onEnter = async (e: KeyboardEvent) => {
 		if (e.key === 'Enter') {
@@ -27,15 +46,11 @@
 				return;
 			}
 
-			const requestUrl = new URL(`${serverUrl()}/remember/likes/add`);
-			requestUrl.searchParams.append('text', value);
-			const response = await fetch(requestUrl.toString()).then((response) => response.json());
-			likes = response.likes;
-			target.value = '';
+			await addLike(value);
+			likeInput = '';
 
 			if (target instanceof HTMLInputElement) {
 				target.focus();
-				target.value = '';
 			}
 		}
 	};
@@ -47,9 +62,7 @@
 	$: {
 		if (!initialized && browser) {
 			loading = true;
-			fetchLikes(serverUrl()).then((response) => {
-				likes = response;
-				initialized = true;
+			getLikes().finally(() => {
 				loading = false;
 			});
 		}
@@ -67,6 +80,7 @@
 	<div class="py-4">Describe Myself</div>
 	<Input
 		placeholder="What do I like?"
+		bind:value={likeInput}
 		on:keyup={onEnter}
 		class={'my-4 text-xl ' + inputClass}
 		autocomplete="off"

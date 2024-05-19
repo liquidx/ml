@@ -4,6 +4,8 @@
 	import { dot, subtract, sum, square } from 'mathjs';
 	import axios from 'axios';
 	import { svgForEmbedding } from '$lib/embedding';
+	import type { Like } from '$lib/likes';
+	import { get } from 'svelte/store';
 
 	type SubjectCorrelation = {
 		subject: string;
@@ -30,13 +32,24 @@
 
 	$: {
 		if (browser && likes.length == 0) {
-			//loading = true;
-			// fetchLikes(serverUrl()).then((response) => {
-			// 	likes = response;
-			// 	loading = false;
-			// });
+			loading = true;
+			getLikes().finally(() => {
+				loading = false;
+			});
+			
 		}
 	}
+
+	const getLikes = async () => {
+		return axios.get('/api/likes').then((response) => {
+			if (response.data && response.data.likes) {
+				likes = response.data.likes as Like[];
+			} else {
+				console.error('No likes found');
+			}
+		});
+	};
+
 
 	const correlateChunks = (chunks: TextEmbedding[]) => {
 		for (let chunk of chunks) {
@@ -70,7 +83,7 @@
 
 				console.log(response);
 		
-			const extractedChunks = []  // response.data
+			const extractedChunks = response.data as TextEmbedding[];
 			for (let chunk of extractedChunks) {
 				let embedding = chunk.embedding;
 				let text = chunk.text;
