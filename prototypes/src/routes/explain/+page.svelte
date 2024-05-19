@@ -4,7 +4,6 @@
 	import axios from 'axios';
 	import { mode } from 'd3';
 
-	let modelOutput: {[modelId: string]: HTMLDivElement} = {}
 
 	let loading = false;
 	let inputClass: string = '';
@@ -18,10 +17,21 @@
 	};
 
 	const models : Model[] = [
+		{ name: 'Gemini 1.5 Pro', modelId: 'gemini-1.5-pro-latest', useOllama: false},
+		{ name: 'Gemini 1.5 Flash', modelId: 'gemini-1.5-flash-latest', useOllama: false},
 		{ name: 'GPT-4 Turbo', modelId: 'gpt-4-turbo', useOllama: false },
 		{ name: 'GPT-3.5', modelId: 'gpt-3.5-turbo-0125', useOllama: false},
 		{ name: 'Ollama Llama3', modelId: 'llama3:latest', useOllama: true },
 	]
+
+	let modelOutput: {[modelId: string]: HTMLDivElement} = {}
+	let modelEnabled : {[modelId: string]: boolean} = {
+		'gemini-1.5-pro-latest': true,
+		'gemini-1.5-flash-latest': true,
+		'gpt-4-turbo': true,
+		'gpt-3.5-turbo-0125': true,
+		'llama3:latest': true,
+	}
 
 	let validModels : Model[] = models;
 
@@ -55,12 +65,12 @@
 			},
 		});
 
-		if (response && response.data && response.data.choices && response.data.choices.length > 0 && response.data.choices[0].message.content) {
+		if (response && response.data && response.data.text) {
 			const output = modelOutput[model.modelId];
 			if (!output) {
 				return;
 			}
-			output.innerHTML = response.data.choices[0].message.content;
+			output.innerHTML = response.data.text;
 		}
 	};
 
@@ -69,8 +79,10 @@
 			loading = true;
 			// Create request for each model.
 			for (const model of validModels) {
-				modelOutput[model.modelId].innerHTML = '';
-				requestExplanation(subjectText, model)
+				if (modelEnabled[model.modelId]) {
+					modelOutput[model.modelId].innerHTML = '';
+					requestExplanation(subjectText, model)
+				}
 			}
 			loading = false;
 		}
@@ -93,10 +105,11 @@
 				placeholder="World Cup"
 				on:keyup={onEnter}
 				bind:value={subjectText}
+				disabled={modelEnabled[model.modelId] === false}
 				class={'my-4 text-xl' + inputClass}
 				autocomplete="off"
 				/>
-				<div class="text-xs text-gray-300">{model.name}</div>
+				<Checkbox bind:checked={modelEnabled[model.modelId]} class="text-xs text-gray-400">{model.name}</Checkbox>
 				<div class="text-xl" bind:this={modelOutput[model.modelId]} />
 			</div>
 		{/each}

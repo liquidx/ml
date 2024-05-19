@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
-import { OPENAI_API_KEY } from '$env/static/private';
+import { OPENAI_API_KEY, GEMINI_API_KEY } from '$env/static/private';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -14,16 +15,27 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	console.log({ model, baseURL });
 
-	const openai = new OpenAI({ apiKey, baseURL });
-	const response = await openai.chat.completions.create({
-		model,
-		messages: [
-			{
-				role: 'system',
-				content: prompt
-			}
-		]
-	});
-
-	return json(response);
+	if (model.startsWith('gpt') || useOllama) {
+		const openai = new OpenAI({ apiKey, baseURL });
+		const response = await openai.chat.completions.create({
+			model,
+			messages: [
+				{
+					role: 'system',
+					content: prompt
+				}
+			]
+		});
+		const text = response.choices[0].message.content;
+		return json({ text });
+	} else if (model.startsWith('gemini')) {
+		const gemini = new GoogleGenerativeAI(GEMINI_API_KEY);
+		const geminiModel = gemini.getGenerativeModel({ model });
+		console.log({ model, prompt });
+		const result = await geminiModel.generateContent(prompt);
+		const response = result.response;
+		return json({ text: response.text() });
+	} else {
+		return error(400, 'Invalid model');
+	}
 };
