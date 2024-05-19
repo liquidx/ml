@@ -2,7 +2,7 @@ import { ANTHROPIC_API_KEY } from '$env/static/private';
 import { error, json } from '@sveltejs/kit';
 import axios from 'axios';
 
-export const generateContent = async (prompt: string, model: string): Response => {
+export const generateContent = async (prompt: string, model: string): Promise<Response> => {
 	const headers = {
 		'Content-Type': 'application/json',
 		'x-api-key': ANTHROPIC_API_KEY
@@ -13,7 +13,11 @@ export const generateContent = async (prompt: string, model: string): Response =
 		model,
 		messages: [{ role: 'user', content: prompt }]
 	};
-	const response = await axios.post(url, data, { headers });
+	const response = await axios.post(url, data, { headers }).catch((e) => {
+		console.error(e);
+		return error(500, 'Error calling Anthropic API:' + e.message);
+	});
+
 	if (!response || !response.data) {
 		return error(500, 'No response from Anthropic API');
 	}

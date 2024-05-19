@@ -36,10 +36,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		const response = result.response;
 		return json({ text: response.text() });
 	} else if (model.startsWith('claude')) {
-		const response = await generateContent(prompt, model).catch((e) => {
-			console.log(e.message);
-			return error(500, 'No response from Anthropic API');
-		});
+		const response = await generateContent(prompt, model);
 		return response;
 	} else {
 		return error(400, 'Invalid model');
