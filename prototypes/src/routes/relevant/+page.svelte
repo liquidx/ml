@@ -2,6 +2,8 @@
 	import { Input, Badge } from 'flowbite-svelte';
 	import { browser } from '$app/environment';
 	import { dot, subtract, sum, square } from 'mathjs';
+	import axios from 'axios';
+	import { svgForEmbedding } from '$lib/embedding';
 
 	type SubjectCorrelation = {
 		subject: string;
@@ -28,11 +30,11 @@
 
 	$: {
 		if (browser && likes.length == 0) {
-			loading = true;
-			fetchLikes(serverUrl()).then((response) => {
-				likes = response;
-				loading = false;
-			});
+			//loading = true;
+			// fetchLikes(serverUrl()).then((response) => {
+			// 	likes = response;
+			// 	loading = false;
+			// });
 		}
 	}
 
@@ -62,23 +64,14 @@
 				return;
 			}
 
-			const requestUrl = new URL(`${serverUrl()}/embeddings/url`);
-			const params = {
-				url: value
-			};
-			loading = true;
-			const response = await fetch(requestUrl, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(params)
-			}).then((response) => response.json());
-			loading = false;
+			const response = await axios.post(
+				'/api/url-embeddings', 
+				{	url: value })
 
-			console.log(response);
-
-			for (let chunk of response) {
+				console.log(response);
+		
+			const extractedChunks = []  // response.data
+			for (let chunk of extractedChunks) {
 				let embedding = chunk.embedding;
 				let text = chunk.text;
 				let embeddingCode: TextEmbedding = {

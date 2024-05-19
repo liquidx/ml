@@ -12,11 +12,11 @@ export type ChunkEmbedding = {
 	embedding: number[];
 };
 
-export const chunksFromUrl = async (url: string): Promise<string[]> => {
+export const chunksFromUrl = async (url: URL): Promise<string[]> => {
 	const sanitizeOptions = getSanitizeHtmlOptions();
 	sanitizeOptions.allowedTags = sanitizeAllowedTags;
 	setSanitizeHtmlOptions(sanitizeOptions);
-	const article = await extract(url as string, crawlOptions as any);
+	const article = await extract(url.toString(), crawlOptions as any);
 	if (!article) {
 		return [];
 	}

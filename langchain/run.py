@@ -7,7 +7,7 @@ from langchain.chains import LLMChain, SimpleSequentialChain, SequentialChain
 from langchain.memory import ConversationBufferMemory
 from langchain.utilities import WikipediaAPIWrapper
 
-SECRET_KEY = os.getenv('PUBLIC_OPENAI_API_KEY')
+SECRET_KEY = os.getenv('OPENAI_API_KEY')
 
 
 def main():
