@@ -31,4 +31,5 @@ __pycache__/
 
 prototypes/build
 prototypes/.svelte-kit
+prototypes/.vercel
 prototypes/package
