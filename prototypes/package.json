@@ -39,6 +39,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@extractus/article-extractor": "^8.0.10",
 		"@popperjs/core": "^2.11.8",
 		"@sveltejs/vite-plugin-svelte": "^3.1.0",
 		"axios": "^1.6.8",
@@ -47,6 +48,7 @@
 		"flowbite": "^2.3.0",
 		"flowbite-svelte": "^0.46.1",
 		"mathjs": "^12.4.2",
+		"mongodb": "^6.6.2",
 		"openai": "^4.47.1"
 	}
 }
