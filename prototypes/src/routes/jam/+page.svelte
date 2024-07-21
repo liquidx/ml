@@ -7,6 +7,9 @@
 		initialPrompt: 'You are a professional at guiding people through a complex problem. Give a follow up clarifying question in a single sentence. Include examples.'
 	}
 
+	let jammerDynamic : JamConfig = {
+		initialPrompt: 'Think carefully and plan out the steps. Give a follow up clarifying question in a single sentence. Include examples.'
+	}
 
 </script>
 
@@ -21,6 +24,6 @@
 	<div class="my-4 text-xl">Jam</div>
 	<div class="flex flex-row flex-nowrap gap-4">
 		<JamDialog config={jammerSimple}/>
-		<JamDialog config={jammerSimple}/>
+		<JamDialog config={jammerDynamic}/>
 	</div>
 </div>
