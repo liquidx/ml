@@ -5,11 +5,21 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { generateContent } from '$lib/anthropic';
 
+const getBaseUrl = (model: string) => {
+	if (model.startsWith('gpt')) {
+		return 'https://api.openai.com/v1';
+	} else if (model.startsWith('mistral')) {
+		return 'https://api.together.xyz/v1';
+	} else {
+		return 'http://localhost:11434/v1';
+	}
+};
+
 export const GET: RequestHandler = async ({ url }) => {
 	const useOllama = url.searchParams.get('useOllama') === 'true';
-	const baseURL = useOllama ? 'http://localhost:11434/v1' : 'https://api.openai.com/v1';
 	const apiKey = useOllama ? 'ollama' : OPENAI_API_KEY;
 	const model = url.searchParams.get('model') ?? 'gpt-3.5-turbo-0125';
+	const baseURL = getBaseUrl(model);
 
 	const prompt = url.searchParams.get('prompt');
 	if (!prompt) return error(400, 'Missing prompt');
