@@ -20,6 +20,7 @@
 		"@sveltejs/kit": "^2.5.18",
 		"@sveltejs/vite-plugin-svelte": "^3.1.1",
 		"@types/d3": "^7.4.3",
+		"@types/showdown": "^2.0.6",
 		"autoprefixer": "^10.4.19",
 		"eslint": "^9.7.0",
 		"eslint-config-prettier": "^9.1.0",
@@ -39,6 +40,9 @@
 		"vitest": "^2.0.3"
 	},
 	"type": "module",
+	"engines": {
+		"node": "20"
+	},
 	"dependencies": {
 		"@extractus/article-extractor": "^8.0.10",
 		"@google/generative-ai": "^0.15.0",
@@ -53,6 +57,7 @@
 		"mathjs": "^13.0.3",
 		"mongodb": "^6.8.0",
 		"openai": "^4.52.7",
+		"showdown": "^2.1.0",
 		"tailwind-merge": "^2.4.0",
 		"tailwind-variants": "^0.2.1"
 	}

@@ -3,6 +3,7 @@
 	<div><a class="underline" href="/meaning">Meaning</a></div>
 	<div><a class="underline" href="/relevant">Relevant</a></div>
 	<div><a class="underline" href="/rememberme">Remember Me</a></div>
+	<div><a class="underline" href="/jam">Jam</a></div>
 </div>
 
 <div class="p-8">

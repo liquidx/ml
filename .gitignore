@@ -33,3 +33,5 @@ prototypes/build
 prototypes/.svelte-kit
 prototypes/.vercel
 prototypes/package
+
+firebase-debug.log
